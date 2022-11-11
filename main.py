@@ -21,10 +21,17 @@ WebDriverWait(driver, 30).until(
 )'''
 
 driver.get('https://demo.seleniumeasy.com/basic-first-form-demo.html')
-driver.implicitly_wait(6)
+driver.implicitly_wait(4)
 num1 = driver.find_element(By.ID, 'sum1')
 num2 = driver.find_element(By.ID, 'sum2')
 
+try:
+    no_button = driver.find_element(By.CLASS_NAME, 'at-cm-no-button')
+    no_button.click()
+except:
+    print('No button with that class name.')
+
 num1.send_keys(Keys.NUMPAD4, Keys.NUMPAD5)
 num2.send_keys(Keys.NUMPAD6, Keys.NUMPAD9)
-
+btn = driver.find_element(By.CSS_SELECTOR, 'button[onclick="return total()"]')
+btn.click()
