@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import booking.constants as cons
 import os
+from .booking_filtration import BookingFiltration
 
 
 class Booking(webdriver.Chrome):
@@ -11,7 +12,7 @@ class Booking(webdriver.Chrome):
         self.teardown = teardown
         os.environ['PATH'] += self.driver_path
         super(Booking, self).__init__()
-        self.implicitly_wait(55)
+        self.implicitly_wait(5)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.teardown:
@@ -37,9 +38,14 @@ class Booking(webdriver.Chrome):
         search_field.send_keys(place)
 
     def select_dates(self, check_in, check_out):
-        date_field = self.find_element(By.CSS_SELECTOR,
-                                       f'button[data-testid="date-display-field-start"]')
-        date_field.click()
+        date_field = 0
+        while date_field == 0:
+            date_field = self.find_element(By.CSS_SELECTOR,
+                                           f'button[data-testid="date-display-field-start"]')
+            if date_field == 0:
+                self.refresh()
+            else:
+                date_field.click()
 
         check_in_date = self.find_element(By.XPATH,
                                           '//span[@data-date="'+check_in+'"]')
@@ -51,6 +57,12 @@ class Booking(webdriver.Chrome):
 
     def room_size(self, adults, children=0, room=1):
         self.find_element(By.CSS_SELECTOR, 'button[data-testid="occupancy-config"]').click()
+        increase_adults = self.find_element(By.CSS_SELECTOR, 'button[+]')
+        for i in (adults-2):
+            increase_adults.click()
 
     def search(self):
         self.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
+
+    def filtrations(self):
+        filtration = BookingFiltration(driver=self)
