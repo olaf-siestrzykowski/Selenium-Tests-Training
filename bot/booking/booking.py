@@ -1,3 +1,4 @@
+import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -63,6 +64,13 @@ class Booking(webdriver.Chrome):
 
     def search(self):
         self.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
+        time.sleep(4)
+        try:
+            self.find_element(By.CSS_SELECTOR, 'button[aria-label="Zamknij okno logowania."]').click()
+        except:
+            pass
 
     def filtrations(self):
         filtration = BookingFiltration(driver=self)
+        filtration.sorting()
+        filtration.star_rating(4, 3, 5, 1)
