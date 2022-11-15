@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 
 
 class BookingFiltration:
-    def __init__(self, driver:WebDriver):
+    def __init__(self, driver: WebDriver):
         self.driver = driver
 
     def sorting(self):

@@ -3,6 +3,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import booking.constants as cons
+from .report import Report
+from prettytable import PrettyTable
 import os
 from .booking_filtration import BookingFiltration
 
@@ -12,7 +14,9 @@ class Booking(webdriver.Chrome):
         self.driver_path = driver_path
         self.teardown = teardown
         os.environ['PATH'] += self.driver_path
-        super(Booking, self).__init__()
+        options = webdriver.ChromeOptions()
+        options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        super(Booking, self).__init__(options=options)
         self.implicitly_wait(5)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -73,4 +77,14 @@ class Booking(webdriver.Chrome):
     def filtrations(self):
         filtration = BookingFiltration(driver=self)
         filtration.sorting()
-        filtration.star_rating(4, 3, 5, 1)
+        filtration.star_rating(4, 2, 1, 3)
+
+    def results(self):
+        hotels = self.find_element(By.CSS_SELECTOR,
+                                   'div[data-capla-component="b-search-web-searchresults/PropertiesListDesktop"]')
+        report = Report(hotels)
+        table = PrettyTable(
+            field_names=['Name', 'Price', 'Rating']
+        )
+        table.add_rows(report.pull_data())
+        print(table)
